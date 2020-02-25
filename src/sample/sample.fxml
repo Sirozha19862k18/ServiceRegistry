@@ -27,15 +27,17 @@
             <Label layoutX="30.0" layoutY="292.0" text="Количество человек " />
             <Label layoutX="30.0" layoutY="308.0" text="на выезде" />
             <Label layoutX="30.0" layoutY="346.0" text="Фамилии" />
-            <TextField fx:id="employerNameTextField" layoutX="174.0" layoutY="342.0" prefHeight="25.0" prefWidth="439.0" />
+            <TextField fx:id="employerNameTextField" layoutX="174.0" layoutY="342.0" prefHeight="25.0" prefWidth="464.0" />
             <TextField fx:id="carDrivingToIncidentTextField" layoutX="174.0" layoutY="387.0" />
             <TextField fx:id="mileageTextField" layoutX="174.0" layoutY="424.0" />
             <Label layoutX="30.0" layoutY="400.0" text="Автомобиль" />
             <Label layoutX="30.0" layoutY="428.0" text="Пробег" />
             <TextArea fx:id="fixProblemTextArea" layoutX="15.0" layoutY="487.0" prefHeight="153.0" prefWidth="619.0" />
             <Label layoutX="249.0" layoutY="470.0" text="Описание решения проблемы" />
+            <TextField fx:id="employerTimeTextField" layoutX="543.0" layoutY="296.0" prefHeight="25.0" prefWidth="89.0" />
+            <Label layoutX="336.0" layoutY="301.0" text="Время устранения проблемы" />
          </children></Pane>  </HBox>
-<HBox><Button fx:id="openXML" mnemonicParsing="false" onAction="#openXML" text="Вывести лист" /> </HBox>
+    <HBox><Button fx:id="openXML" mnemonicParsing="false" onAction="#openXML" text="Вывести лист" /><Button fx:id="SaveXML" mnemonicParsing="false" onAction="#saveXML" text="Сохранить" /> </HBox>
 
 
 </VBox>
