@@ -6,8 +6,18 @@ public class Client {
 
     String clientName;
     String incidentNumber;
-    Date dateIncident;
+    String dateIncident;
     String problemName;
+
+    public String getEmployerName() {
+        return employerName;
+    }
+
+    public void setEmployerName(String employerName) {
+        this.employerName = employerName;
+    }
+
+    String employerName;
     int empoyerTime;
     int employerCounter;
     String carDrivingToIncident;
@@ -30,11 +40,11 @@ public class Client {
         this.incidentNumber = incidentNumber;
     }
 
-    public Date getDateIncident() {
+    public String getDateIncident() {
         return dateIncident;
     }
 
-    public void setDateIncident(Date dateIncident) {
+    public void setDateIncident(String dateIncident) {
         this.dateIncident = dateIncident;
     }
 

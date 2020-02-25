@@ -18,14 +18,21 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 
 
 public class Controller {
 
-    ObservableList<String> obList;
+    ObservableList<String> observableListClient;
+    ObservableList<String> observableListIncident;
     Document doc;
     NodeList nodeList;
     int section;
@@ -59,97 +66,101 @@ public class Controller {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dbuilder = factory.newDocumentBuilder();
         doc = dbuilder.parse(xmlFille);
-        obList = FXCollections.observableArrayList();
-        String elementName="client";
-        printElement(elementName);
-        list.setItems(obList);
+        observableListClient = FXCollections.observableArrayList();
+        observableListIncident= FXCollections.observableArrayList();
+        printClientList();
+        list.setItems(observableListClient);
     }
 /*Сохранить изменения в протоколе сервиса*/
     @FXML
     public void saveXML(ActionEvent actionEvent) {
-   //     if(protocolServiseProperties.hasAttribute("dateIncident")) {
-            System.out.println(1);
-            protocolServiseProperties.setNodeValue(dateOfIncidentTextField.getText());
-protocolServiseProperties.setAttribute("dateIncident", dateOfIncidentTextField.getText());
-       // }
-        if(protocolServiseProperties.hasAttribute("problemName")) {
-
-        }
-        if(protocolServiseProperties.hasAttribute("employerCounter")) {
-
-        }
-        if(protocolServiseProperties.hasAttribute("employerName")) {
-
-        }
-        if(protocolServiseProperties.hasAttribute("carDrivingToIncident")) {
-
-        }
-        if(protocolServiseProperties.hasAttribute("mileage")) {
-
-        }
-        if(protocolServiseProperties.hasAttribute("fixProblem")) {
-
-        }
-        if(protocolServiseProperties.hasAttribute("employerTime")) {
-
-        }
+        String argument = "save";
+        incidentDetails(argument);
     }
 
     /* Вывод списка клиентов */
-    void printElement(String elementName) {
-         nodeList=doc.getElementsByTagName(elementName);
+    void printClientList() {
+         nodeList=doc.getElementsByTagName("client");
          for (int i =0; i<nodeList.getLength(); i++) {
           Node node = nodeList.item(i);
              if (node.getNodeType() == Node.ELEMENT_NODE) {
                  Element   eElement = (Element) node;
-                 obList.add(eElement.getAttribute(elementName) );
+                 observableListClient.add(eElement.getAttribute("client"));
              }
          }
-
         }
-    public void searchChildNode() {
-        for (int indx = 0; indx < nodeList.getLength(); indx++)
-        {
-            Element eElement = (Element) nodeList.item(indx);
-            if (eElement.getAttribute("client").equals(client.getClientName()))
-            {
-                if (nodeList.item(indx).hasChildNodes())
-                {
-                    childNode = nodeList.item(indx).getChildNodes();
-                    for (int i = 0; i < childNode.getLength(); i++)
-                    {
-                       childNodeOfClient = childNode.item(i);
-                        if (childNodeOfClient.getNodeType() == Node.ELEMENT_NODE)
-                        {
-                            Element elementChildOfClient = (Element) childNodeOfClient;
-                            obList.add(elementChildOfClient.getAttribute("incidentNumber"));
+    /* Вывод списка инцидентов */
+        void printIncidentList() {
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Element eElement = (Element) nodeList.item(i);
+                if (eElement.getAttribute("client").equals(client.getClientName())) {
+                    if (nodeList.item(i).hasChildNodes()) {
+                      childNode = nodeList.item(i).getChildNodes();
+                        for (int indx = 0; indx < childNode.getLength(); indx++) {
+                            childNodeOfClient = childNode.item(indx);
+                            if (childNodeOfClient.getNodeType() == Node.ELEMENT_NODE) {
+                                Element elementChildOfClient = (Element) childNodeOfClient;
+                                observableListIncident.add(elementChildOfClient.getAttribute("incidentNumber"));
+                            }
                         }
                     }
                 }
             }
-            }
         }
 
-        /* Вывод списка инцидентов */
-void incidentDetails(){
-    for (int i = 0; i < childNode.getLength(); i++)
-    {
+        void SaveIncident(){
+            if(protocolServiseProperties.hasAttribute("dateIncident")) {
+                protocolServiseProperties.setAttribute("dateIncident", dateOfIncidentTextField.getText());
+             }
+            if(protocolServiseProperties.hasAttribute("problemName")) {
+                System.out.println(1);
+                protocolServiseProperties.setAttribute("problemName", problemNameTextArea.getText());
+            }
+            if(protocolServiseProperties.hasAttribute("employerCounter")) {
+               protocolServiseProperties.setAttribute("employerCounter", employerCounterTextField.getText());
+            }
+            if(protocolServiseProperties.hasAttribute("employerName")) {
+                protocolServiseProperties.setAttribute("employerName", employerNameTextField.getText());
+            }
+            if(protocolServiseProperties.hasAttribute("carDrivingToIncident")) {
+                protocolServiseProperties.setAttribute("carDrivingToIncident", carDrivingToIncidentTextField.getText());
+            }
+            if(protocolServiseProperties.hasAttribute("mileage")) {
+                protocolServiseProperties.setAttribute("mileage", mileageTextField.getText());
+            }
+            if(protocolServiseProperties.hasAttribute("fixProblem")) {
+               protocolServiseProperties.setAttribute("fixProblem", fixProblemTextArea.getText());
+            }
+            if(protocolServiseProperties.hasAttribute("employerTime")) {
+              protocolServiseProperties.setAttribute("employerTime", employerTimeTextField.getText());
+            }
+
+        }
+
+        /* Вывод подробностей инцидента*/
+void incidentDetails(String argument) {
+    for (int i = 0; i < childNode.getLength(); i++) {
         childNodeOfClient = childNode.item(i);
-        if (childNodeOfClient.getNodeType() == Node.ELEMENT_NODE)
-        {
+        if (childNodeOfClient.getNodeType() == Node.ELEMENT_NODE) {
             Element elementChildOfClient = (Element) childNodeOfClient;
-            if (elementChildOfClient.getAttribute("incidentNumber").equals(client.getIncidentNumber()))
-            {
-                if(elementChildOfClient.hasChildNodes()){
+            if (elementChildOfClient.getAttribute("incidentNumber").equals(client.getIncidentNumber())) {
+                if (elementChildOfClient.hasChildNodes()) {
                     NodeList propertiesNode = elementChildOfClient.getChildNodes();
-                    for (i=0; i<propertiesNode.getLength(); i++)
-                    {
+                    for (i = 0; i < propertiesNode.getLength(); i++) {
                         Node propNode = propertiesNode.item(i);
-                        if(propNode.getNodeType() == Node.ELEMENT_NODE)
-                        {
-                            protocolServiseProperties = (Element) propNode;
-                            incidentPrint (elementChildOfClient);
-                        }
+                        if (propNode.getNodeType() == Node.ELEMENT_NODE)
+                            if (argument.equals("print")) {
+                                {
+                                    protocolServiseProperties = (Element) propNode;
+                                    incidentPrint(elementChildOfClient);
+                                }
+                            } else if (argument.equals("save")) {
+                                {
+                                    protocolServiseProperties = (Element) propNode;
+                                    SaveIncident();
+                                    writeDocument(doc);
+                                }
+                            }
                     }
                 }
             }
@@ -157,34 +168,49 @@ void incidentDetails(){
     }
 }
 
-
 public void incidentPrint( Element elementChildOfClient){
     numberOfIncident.setEditable(false);
     numberOfIncident.setDisable(true);
     numberOfIncident.setText(elementChildOfClient.getAttribute("incidentNumber"));
     if(protocolServiseProperties.hasAttribute("dateIncident")) {
-        dateOfIncidentTextField.setText(protocolServiseProperties.getAttribute("dateIncident"));
+        String dateIncident = protocolServiseProperties.getAttribute("dateIncident");
+        client.setDateIncident(dateIncident);
+        dateOfIncidentTextField.setText(dateIncident);
     }
     if(protocolServiseProperties.hasAttribute("problemName")) {
-        problemNameTextArea.setText(protocolServiseProperties.getAttribute("problemName"));
+        String problemName = protocolServiseProperties.getAttribute("problemName");
+        client.setProblemName(problemName);
+        problemNameTextArea.setText(problemName);
     }
     if(protocolServiseProperties.hasAttribute("employerCounter")) {
-        employerCounterTextField.setText(protocolServiseProperties.getAttribute("employerCounter"));
+        String  employerCounter=protocolServiseProperties.getAttribute("employerCounter");
+        client.setEmployerCounter(Integer.parseInt(employerCounter));
+        employerCounterTextField.setText(employerCounter);
     }
     if(protocolServiseProperties.hasAttribute("employerName")) {
-        employerNameTextField.setText(protocolServiseProperties.getAttribute("employerName"));
+        String employerName = protocolServiseProperties.getAttribute("employerName");
+        client.setEmployerName(employerName);
+        employerNameTextField.setText(employerName);
     }
     if(protocolServiseProperties.hasAttribute("carDrivingToIncident")) {
-        carDrivingToIncidentTextField.setText(protocolServiseProperties.getAttribute("carDrivingToIncident"));
+        String carDrivingToIncident = protocolServiseProperties.getAttribute("carDrivingToIncident");
+        client.setCarDrivingToIncident(carDrivingToIncident);
+        carDrivingToIncidentTextField.setText(carDrivingToIncident);
     }
     if(protocolServiseProperties.hasAttribute("mileage")) {
-        mileageTextField.setText(protocolServiseProperties.getAttribute("mileage"));
+        String mileage = protocolServiseProperties.getAttribute("mileage");
+        client.setMileage(Integer.parseInt(mileage));
+        mileageTextField.setText(mileage);
     }
     if(protocolServiseProperties.hasAttribute("fixProblem")) {
-        fixProblemTextArea.setText(protocolServiseProperties.getAttribute("fixProblem"));
+        String fixProblem = protocolServiseProperties.getAttribute("fixProblem");
+        client.setFixProblem(fixProblem);
+        fixProblemTextArea.setText(fixProblem);
     }
     if(protocolServiseProperties.hasAttribute("employerTime")) {
-        employerTimeTextField.setText(protocolServiseProperties.getAttribute("employerTime"));
+        String employerTime = protocolServiseProperties.getAttribute("employerTime");
+        client.setEmpoyerTime(Integer.parseInt(employerTime));
+        employerTimeTextField.setText(employerTime);
     }
 
 }
@@ -197,9 +223,10 @@ public void incidentPrint( Element elementChildOfClient){
                 {   //обработка страниц вывода, чтобы по двойному таму на чилдовой ноде не выводился снова список
                     countMouseClick = 0;
                     String clientChange = list.getSelectionModel().getSelectedItem();
-                    obList.clear();
+                    observableListClient.clear();
                     client.setClientName(clientChange);
-                    searchChildNode();
+                    printIncidentList();
+                    list.setItems(observableListIncident);
                     section =2;
                 }
                 if (section == 2)
@@ -207,11 +234,25 @@ public void incidentPrint( Element elementChildOfClient){
                     countMouseClick =0;
                     String incidentChange = list.getSelectionModel().getSelectedItem();
                     client.setIncidentNumber(incidentChange);
-                    incidentDetails();
+                    String argument ="print";
+                    incidentDetails(argument);
                 }
                 else{
                     countMouseClick =0;}
             }
         }
+    private static void writeDocument(Document document) {
+        try {
+            Transformer tr = TransformerFactory.newInstance().newTransformer();
+            DOMSource source = new DOMSource(document);
+            FileOutputStream fos = new FileOutputStream("service.xml");
+            StreamResult result = new StreamResult(fos);
+            tr.transform(source, result);
+            fos.close();
+
+        } catch (TransformerException | IOException e) {
+            e.printStackTrace(System.out);
+        }
+    }
 
 }
