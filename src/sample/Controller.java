@@ -1,16 +1,14 @@
 package sample;
 
 import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.BaseFont;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import org.w3c.dom.*;
@@ -339,7 +337,8 @@ clientCounterLabel.setText(String.valueOf(clientCounter));
 
     public void exportToPDF(ActionEvent actionEvent) throws IOException, DocumentException {
         com.itextpdf.text.Document document = new com.itextpdf.text.Document(PageSize.A4);
-        PdfWriter.getInstance(document, new FileOutputStream("iTextHelloWorld.pdf"));
+        PdfWriter.getInstance(document, new FileOutputStream(client.getIncidentNumber()+".pdf"));
+
         document.open();
         BaseFont baseFont = BaseFont.createFont("src/sample/font.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
         Font font = new Font(baseFont, 12, Font.NORMAL);
@@ -371,14 +370,29 @@ clientCounterLabel.setText(String.valueOf(clientCounter));
         Chunk clientSignature = new Chunk("Клиент:", font);
         Chunk serviceSignature = new Chunk("Исполнитель:", font);
         Chunk signature = new Chunk("________________________(                        )", font);
-
+        /*Вставка логотипа*/
+        Image image = Image.getInstance("src/sample/resource/logo.jpg");
         /*  Формирование заголовка*/
-        Paragraph serviceProtocolText = new Paragraph(serviseProtokolChunk);
-        serviceProtocolText.setAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
-        document.add(serviceProtocolText);
-        Paragraph numberOfProtocol = new Paragraph(incidentNumberChunk);
-        numberOfProtocol.setAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
-        document.add(numberOfProtocol);
+        float[] tableHeaderWidth = {35f, 65f};
+        PdfPTable tableHeader = new PdfPTable(tableHeaderWidth);
+        tableHeader.setWidthPercentage(100f);
+        PdfPCell cellImage = new PdfPCell(image);
+        cellImage.setBorder(Rectangle.NO_BORDER);
+        tableHeader.addCell(cellImage);
+        PdfPTable tableSignatureHeader = new PdfPTable(1);
+        PdfPCell cellServiseProtocolText = new PdfPCell(new Phrase(serviseProtokolChunk));
+        cellServiseProtocolText.setFixedHeight(40f);
+        cellServiseProtocolText.setVerticalAlignment(com.itextpdf.text.Element.ALIGN_BOTTOM);
+        cellServiseProtocolText.setBorder(Rectangle.NO_BORDER);
+        PdfPCell cellProtocolNumber = new PdfPCell(new Phrase(incidentNumberChunk));
+        cellProtocolNumber.setBorder(Rectangle.NO_BORDER);
+        tableSignatureHeader.addCell(cellServiseProtocolText);
+        tableSignatureHeader.addCell(cellProtocolNumber);
+        PdfPCell cellHeader = new PdfPCell(tableSignatureHeader);
+        cellHeader.setBorder(Rectangle.NO_BORDER);
+        tableHeader.addCell(cellHeader);
+        tableHeader.completeRow();
+        document.add(tableHeader);
        /* Таблица где вписано имя клиента */
         float[] poinColumnWidthClient={30F, 120F};
         PdfPTable tableClientName = new PdfPTable(poinColumnWidthClient);
@@ -422,7 +436,7 @@ clientCounterLabel.setText(String.valueOf(clientCounter));
         tableDefect.addCell(cellDefectText);
         PdfPCell cellDefect = new PdfPCell(new Phrase(problemNameChunk));
         cellDefect.setUseBorderPadding(true);
-        cellDefect.setFixedHeight(150f);
+        cellDefect.setFixedHeight(100f);
         cellDefect.setHorizontalAlignment(com.itextpdf.text.Element.ALIGN_LEFT);
         tableDefect.addCell(cellDefect);
         tableDefect.completeRow();
@@ -449,7 +463,7 @@ clientCounterLabel.setText(String.valueOf(clientCounter));
         tableFixProblem.addCell(cellFixProblemText);
         PdfPCell cellFixProblemChunk = new PdfPCell(new Phrase(fixProblemChunk));
         cellFixProblemChunk.setUseBorderPadding(true);
-        cellFixProblemChunk.setFixedHeight(250f);
+        cellFixProblemChunk.setFixedHeight(300f);
         tableFixProblem.addCell(cellFixProblemChunk);
         tableFixProblem.completeRow();
         document.add(tableFixProblem);
@@ -507,7 +521,6 @@ clientCounterLabel.setText(String.valueOf(clientCounter));
         tableAutoAndMileage.completeRow();
         document.add(tableAutoAndMileage);
         /* Формирование подписи */
-        document.add(new Paragraph(" "));
         document.add(new Paragraph(" "));
         float[] signatureWidth = {50f, 50f};
         PdfPTable tableFooterName = new PdfPTable(signatureWidth);
