@@ -9,6 +9,16 @@ public class Client {
     String dateIncident;
     String problemName;
 
+    public String getMaterialList() {
+        return materialList;
+    }
+
+    public void setMaterialList(String materialList) {
+        this.materialList = materialList;
+    }
+
+    String materialList;
+
     public String getEmployerName() {
         return employerName;
     }
