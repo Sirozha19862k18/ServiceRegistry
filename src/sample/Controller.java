@@ -1,8 +1,6 @@
 package sample;
 
 import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.*;
-import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,7 +11,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
-import org.omg.CORBA.Environment;
 import org.w3c.dom.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -68,10 +65,11 @@ public class Controller {
     @FXML    ListView<String> clientListToDeleteList;
     @FXML    Button deleteSelectedCliendBtn;
     @FXML    TextArea materialListTextArea;
-    @FXML    Label clientCounterLabel;
     @FXML    TextField newIncidentNumberTextField;
     @FXML    Button confirmNewIncidentNumberBtn;
     @FXML    Label selectedClientLabel;
+    @FXML    Button newIncidentNumberBtn;
+    @FXML    Button deleteSelectedProtocolBtn;
 
 
     @FXML
@@ -82,6 +80,7 @@ public class Controller {
     public void loadXMLfile() throws ParserConfigurationException, IOException, SAXException {
         File xmlFille = new File("src/sample/service.xml");
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setIgnoringElementContentWhitespace(true);
         DocumentBuilder dbuilder = factory.newDocumentBuilder();
         doc = dbuilder.parse(xmlFille);
         observableListClient = FXCollections.observableArrayList();
@@ -89,7 +88,7 @@ public class Controller {
     }
 
     @FXML
-    public void openXML(ActionEvent actionEvent) throws IOException, SAXException, ParserConfigurationException {
+    public void showClientList(ActionEvent actionEvent) throws IOException, SAXException, ParserConfigurationException {
         client = new Client();
         section = 1;
         loadXMLfile();
@@ -338,10 +337,7 @@ public class Controller {
         deleteSelectedCliendBtn.setDisable(false);
             }
 
-           /* Вывод количества клиентов в базе*/
-    public void getClientCounterStatistics(ActionEvent actionEvent) {
-clientCounterLabel.setText(String.valueOf(clientCounter));
-    }
+
 
     public void exportToPDF(ActionEvent actionEvent) throws IOException, DocumentException {
     PDFExporter exportFileToPDF = new PDFExporter();
@@ -355,11 +351,13 @@ clientCounterLabel.setText(String.valueOf(clientCounter));
             confirmNewIncidentNumberBtn.setVisible(true);
             newIncidentNumberTextField.setVisible(true);
             selectedClientLabel.setText(client.getClientName());
+            newIncidentNumberBtn.setDisable(true);
         }
         else {
             String headerText = "Не выбран клиент для которого нужно создать новый протокол сервиса";
             String contentText = "Для выбора клиента необходимо нажать кнопку <Вывести список клиентов>, а затем выбрать нужного вам клиента";
-            showAlertMessage(headerText, contentText);
+             Alert.AlertType alertType= Alert.AlertType.WARNING;
+            showAlertMessage(headerText, contentText, alertType);
         }
 
     }
@@ -378,10 +376,11 @@ clientCounterLabel.setText(String.valueOf(clientCounter));
         employerTimeTextField.setEditable(textFieldSetEditable);
         materialListTextArea.setEditable(textFieldSetEditable);
     }
-
+    /* Добавление нового протокола сервиса */
     public void confirmNewIncidentNumberBtn(ActionEvent actionEvent) {
+        newIncidentNumberBtn.setDisable(false);
         String newIncidentNumber=newIncidentNumberTextField.getText();
-
+        client.setIncidentNumber(newIncidentNumber);
         for (int i = 0; i < nodeList.getLength(); i++) {
             Element eElement = (Element) nodeList.item(i);
             if (eElement.getAttribute("client").equals(client.getClientName())) {
@@ -428,15 +427,71 @@ clientCounterLabel.setText(String.valueOf(clientCounter));
                 }
 
                 writeDocument(doc);
+                String headerText = "Данные успешно внесены";
+                String contentText = "Для клиента "+ client.getClientName()+" протокол сервиса № "+ client.getIncidentNumber()+ " успешно создан";
+                Alert.AlertType alertType= Alert.AlertType.INFORMATION;
+                showAlertMessage(headerText, contentText, alertType);
                 confirmNewIncidentNumberBtn.setVisible(false);
                 newIncidentNumberTextField.setVisible(false);
 
             }
         }
     }
+/*Удаление выбранного протокола сервиса*/
+    public void deleteSelectedProtocol(ActionEvent actionEvent) {
+        if(client!=null&&client.getClientName()!=null&&client.getIncidentNumber()!=null) {
+            System.out.println(1);
+            nodeList = doc.getElementsByTagName("client");
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Node node = nodeList.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    Element eElement = (Element) node;
+                    if (eElement.getAttribute("client").equals(client.getClientName())) {
+                        if (node.hasChildNodes()) {
+                            NodeList protocolChildNodeList = node.getChildNodes();
+                            for (int j = 0; j < protocolChildNodeList.getLength(); j++) {
+                                Node protocolChildNode = protocolChildNodeList.item(j);
+                                if (protocolChildNode.getNodeType() == Node.ELEMENT_NODE) {
+                                    Element protocolElement = (Element) protocolChildNode;
+                                    if (protocolElement.getAttribute("incidentNumber").equals(client.getIncidentNumber())) {
+                                        protocolElement.getParentNode().removeChild(protocolElement);
+                                    }
+                                }
+                            }
 
-    void showAlertMessage(String headerText, String contentText){
-        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        }
+                    }
+                }
+            }
+           for (int k=0; k<nodeList.getLength(); k++){
+               Node node = nodeList.item(k);
+               node.normalize();
+               if(node.hasChildNodes()){
+                   NodeList b = node.getChildNodes();
+                   for (int z=0; z<b.getLength();z++ ){
+                       Node nd = b.item(z);
+                       nd.normalize();
+                   }
+               }
+           }
+
+            writeDocument(doc);
+            String headerText = "Протокол успешно удален";
+            String contentText = "Протокол № "+ client.getIncidentNumber()+" у клиента "+ client.getClientName()+ " успешно удален";
+            Alert.AlertType alertType= Alert.AlertType.INFORMATION;
+            showAlertMessage(headerText, contentText, alertType);
+        }
+        else{
+            String headerText = "Не выбран протокол для удаления";
+            String contentText = "Для выбора клиента необходимо нажать кнопку <Вывести список клиентов>, выбрать нужного вам клиента, а затем выбрать протокол для удаления";
+            Alert.AlertType alertType= Alert.AlertType.WARNING;
+            showAlertMessage(headerText, contentText, alertType);
+        }
+    }
+
+
+    void showAlertMessage(String headerText, String contentText, Alert.AlertType alertType){
+        Alert alert = new Alert(alertType);
         alert.initOwner(Main.getPrimaryStage());
         alert.setTitle("Внимание");
         alert.setHeaderText(headerText);
