@@ -50,8 +50,21 @@
                             <TextArea fx:id="materialListTextArea" layoutX="15.0" layoutY="566.0" prefHeight="54.0" prefWidth="750.0" />
                             <Label layoutX="310.0" layoutY="542.0" text="Список материалов" />
                             <Button fx:id="SaveXML" disable="true" layoutX="348.0" layoutY="630.0" mnemonicParsing="false" onAction="#saveXML" text="Сохранить изменения" />
-                     <Button fx:id="exportToPDFBtn" onAction="#exportToPDF" layoutX="465.0" layoutY="14.0" mnemonicParsing="false" prefHeight="69.0" prefWidth="127.0" text="Экспорт в PDF" />
+                     <Button fx:id="exportToPDFBtn" layoutX="465.0" layoutY="14.0" mnemonicParsing="false" onAction="#exportToPDF" prefHeight="69.0" prefWidth="127.0" text="Экспорт в PDF" />
                         </Pane>
+                    </content>
+                </Tab>
+                <Tab closable="false" text="Инциденты">
+                    <content>
+                        <Pane>
+                     <children>
+                        <Button fx:id="newIncidentNumberBtn" layoutX="92.0" layoutY="61.0" mnemonicParsing="false" onAction="#newIncidentNumberBtnPressed" prefHeight="25.0" prefWidth="225.0" text="Создать протокол сервиса" />
+                        <Button layoutX="92.0" layoutY="213.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="232.0" text="Удалить  протокол сервиса" />
+                        <TextField fx:id="newIncidentNumberTextField" layoutX="358.0" layoutY="61.0" visible="false" />
+                        <Button fx:id="confirmNewIncidentNumberBtn" layoutX="537.0" layoutY="61.0" mnemonicParsing="false" onAction="#confirmNewIncidentNumberBtn" text="OK" visible="false" />
+                        <Label layoutX="92.0" layoutY="22.0" prefHeight="17.0" prefWidth="107.0" text="Выбран клиент:" />
+                        <Label  fx:id="selectedClientLabel" layoutX= "232.0" layoutY="22.0" prefHeight="17.0" prefWidth="287.0" text="" />
+                    </children></Pane>
                     </content>
                 </Tab>
                 <Tab closable="false" text="Клиенты">

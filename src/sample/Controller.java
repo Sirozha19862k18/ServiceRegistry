@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import org.omg.CORBA.Environment;
 import org.w3c.dom.*;
@@ -20,6 +21,7 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -28,9 +30,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
 
 
 public class Controller {
@@ -48,6 +48,7 @@ public class Controller {
     Stage addClientWindow;
     String clienttoDeleteChange;
     int clientCounter;
+    boolean textFieldSetEditable=false; //Разрешает редактировать поля протокола сервиса
 
 
     @FXML    ListView<String> list;
@@ -68,6 +69,9 @@ public class Controller {
     @FXML    Button deleteSelectedCliendBtn;
     @FXML    TextArea materialListTextArea;
     @FXML    Label clientCounterLabel;
+    @FXML    TextField newIncidentNumberTextField;
+    @FXML    Button confirmNewIncidentNumberBtn;
+    @FXML    Label selectedClientLabel;
 
 
     @FXML
@@ -277,6 +281,7 @@ public class Controller {
     private void writeDocument(Document document) {
         try {
             Transformer tr = TransformerFactory.newInstance().newTransformer();
+            tr.setOutputProperty(OutputKeys.INDENT, "yes");
             DOMSource source = new DOMSource(document);
             FileOutputStream fos = new FileOutputStream("service.xml");
             StreamResult result = new StreamResult(fos);
@@ -300,9 +305,9 @@ public class Controller {
         String newClientName = newClientNameTextField.getText();
         loadXMLfile();
         Node root = doc.getDocumentElement();
-        Element book = doc.createElement("client");
-        book.setAttribute("client", newClientName);
-        root.appendChild(book);
+        Element newClient = doc.createElement("client");
+        newClient.setAttribute("client", newClientName);
+        root.appendChild(newClient);
         writeDocument(doc);
     }
 
@@ -341,6 +346,102 @@ clientCounterLabel.setText(String.valueOf(clientCounter));
     public void exportToPDF(ActionEvent actionEvent) throws IOException, DocumentException {
     PDFExporter exportFileToPDF = new PDFExporter();
     exportFileToPDF.exportToPDF(client);
+    }
+
+    /*Новый протокол сервиса создание*/
+    public void newIncidentNumberBtnPressed(ActionEvent actionEvent) {
+
+        if(client!=null){
+            confirmNewIncidentNumberBtn.setVisible(true);
+            newIncidentNumberTextField.setVisible(true);
+        }
+        else {
+            String headerText = "Не выбран клиент для которого нужно создать новый протокол сервиса";
+            String contentText = "Для выбора клиента необходимо нажать кнопку <Вывести список клиентов>, а затем выбрать нужного вам клиента";
+            showAlertMessage(headerText, contentText);
+        }
+
+    }
+
+
+    void formSetEditable(boolean textFieldSetEditable){
+        textFieldSetEditable =this.textFieldSetEditable;
+        numberOfIncident.setEditable(textFieldSetEditable);
+        dateOfIncidentTextField.setEditable(textFieldSetEditable);
+        employerCounterTextField.setEditable(textFieldSetEditable);
+        problemNameTextArea.setEditable(textFieldSetEditable);
+        employerNameTextField.setEditable(textFieldSetEditable);
+        carDrivingToIncidentTextField.setEditable(textFieldSetEditable);
+        mileageTextField.setEditable(textFieldSetEditable);
+        fixProblemTextArea.setEditable(textFieldSetEditable);
+        employerTimeTextField.setEditable(textFieldSetEditable);
+        materialListTextArea.setEditable(textFieldSetEditable);
+    }
+
+    public void confirmNewIncidentNumberBtn(ActionEvent actionEvent) {
+        String newIncidentNumber=newIncidentNumberTextField.getText();
+
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Element eElement = (Element) nodeList.item(i);
+            if (eElement.getAttribute("client").equals(client.getClientName())) {
+                Node clientNode = nodeList.item(i);
+                Element newIncidentNumberNode = doc.createElement("incidentNumber");
+                clientNode.appendChild(newIncidentNumberNode);
+                newIncidentNumberNode.setAttribute("incidentNumber", newIncidentNumber);
+                newIncidentNumberNode.appendChild(doc.createElement("problemName"));
+                newIncidentNumberNode.appendChild(doc.createElement("materialList"));
+                newIncidentNumberNode.appendChild(doc.createElement("employerTime"));
+                newIncidentNumberNode.appendChild(doc.createElement("employerCounter"));
+                newIncidentNumberNode.appendChild(doc.createElement("employerName"));
+                newIncidentNumberNode.appendChild(doc.createElement("carDrivingToIncident"));
+                newIncidentNumberNode.appendChild(doc.createElement("mileage"));
+                newIncidentNumberNode.appendChild(doc.createElement("fixProblem"));
+                for (i=0; i<newIncidentNumberNode.getChildNodes().getLength(); i++){
+                    Element incidentNumberChildNode= (Element) newIncidentNumberNode.getChildNodes().item(i);
+                    switch (i) {
+                        case 0:
+                            incidentNumberChildNode.setAttribute("problemName", "");
+                            break;
+                        case 1:
+                            incidentNumberChildNode.setAttribute("materialList", "");
+                            break;
+                        case 2:
+                            incidentNumberChildNode.setAttribute("employerTime", "0");
+                            break;
+                        case 3:
+                            incidentNumberChildNode.setAttribute("employerCounter", "0");
+                            break;
+                        case 4:
+                            incidentNumberChildNode.setAttribute("employerName", "");
+                            break;
+                        case 5:
+                            incidentNumberChildNode.setAttribute("carDrivingToIncident", "");
+                            break;
+                        case 6:
+                            incidentNumberChildNode.setAttribute("mileage", "0");
+                            break;
+                        case 7:
+                            incidentNumberChildNode.setAttribute("fixProblem", "");
+                            break;
+                    }
+                }
+
+                writeDocument(doc);
+                confirmNewIncidentNumberBtn.setVisible(false);
+                newIncidentNumberTextField.setVisible(false);
+
+            }
+        }
+    }
+
+    void showAlertMessage(String headerText, String contentText){
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.initOwner(Main.getPrimaryStage());
+        alert.setTitle("Внимание");
+        alert.setHeaderText(headerText);
+        alert.setContentText(contentText);
+        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+        alert.show();
     }
 }
 

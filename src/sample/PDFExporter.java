@@ -5,34 +5,40 @@ import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import javafx.application.Application;
+import javafx.scene.control.Alert;
+import javafx.scene.layout.Region;
+import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class PDFExporter {
-    public void exportToPDF(Client client) throws IOException, DocumentException {
+    public void exportToPDF(Client client) throws IOException{
         com.itextpdf.text.Document document = new com.itextpdf.text.Document(PageSize.A4);
-        String folderOfClientProtocol =String.valueOf(client.getClientName());
-        String protocolFileName = String.valueOf(client.getIncidentNumber());
         File file =new File("src/sample/Протоколы/"+client.getClientName()+"/"+client.getIncidentNumber()+".pdf");
         if(!file.exists()){
            // System.out.println(file);
             File file2 = new File("src/sample/Протоколы//"+client.getClientName());
             file2.mkdir();
             //System.out.println(file2);
-            PdfWriter.getInstance(document, new FileOutputStream(file));
         }
-        else {
+        try {
             PdfWriter.getInstance(document, new FileOutputStream(file));
+        } catch (DocumentException ex) {
+            showAlert(ex);
         }
         document.open();
-        BaseFont baseFont = BaseFont.createFont("src/sample/font.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+        BaseFont baseFont = null;
+        try {
+            baseFont = BaseFont.createFont("src/sample/font.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+        } catch (DocumentException ex) {
+           showAlert(ex);
+        }
         Font font = new Font(baseFont, 12, Font.NORMAL);
         Font titleFont = new Font(baseFont, 16, Font.BOLD );
         Font nameOfPropertiesFont = new Font(baseFont, 10, Font.NORMAL);
-
         Chunk serviseProtokolChunk = new Chunk("Сервисный протокол", titleFont );
         Chunk clientTextName= new Chunk("Клиент: ", nameOfPropertiesFont);
         Chunk clientNameChunk = new Chunk(client.getClientName(), titleFont);
@@ -59,7 +65,12 @@ public class PDFExporter {
         Chunk serviceSignature = new Chunk("Исполнитель:", font);
         Chunk signature = new Chunk("________________________(                        )", font);
         /*Вставка логотипа*/
-        Image image = Image.getInstance("src/sample/resource/logo.jpg");
+        Image image = null;
+        try {
+            image = Image.getInstance("src/sample/resource/logo.jpg");
+        } catch (BadElementException ex) {
+            showAlert(ex);
+        }
         /*  Формирование заголовка*/
         float[] tableHeaderWidth = {35f, 65f};
         PdfPTable tableHeader = new PdfPTable(tableHeaderWidth);
@@ -80,7 +91,11 @@ public class PDFExporter {
         cellHeader.setBorder(Rectangle.NO_BORDER);
         tableHeader.addCell(cellHeader);
         tableHeader.completeRow();
-        document.add(tableHeader);
+        try {
+            document.add(tableHeader);
+        } catch (DocumentException ex) {
+            showAlert(ex);
+        }
         /* Таблица где вписано имя клиента */
         float[] poinColumnWidthClient={30F, 120F};
         PdfPTable tableClientName = new PdfPTable(poinColumnWidthClient);
@@ -97,8 +112,16 @@ public class PDFExporter {
         cellClientName.setHorizontalAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
         tableClientName.addCell(cellClientName);
         tableClientName.completeRow();
-        document.add(new Paragraph(" "));
-        document.add(tableClientName);
+        try {
+            document.add(new Paragraph(" "));
+        } catch (DocumentException ex) {
+           showAlert(ex);
+        }
+        try {
+            document.add(tableClientName);
+        } catch (DocumentException ex) {
+            showAlert(ex);
+        }
         /* Таблица где вписана дата дефекта */
         PdfPTable tableDateIncident = new PdfPTable(poinColumnWidthClient);
         tableDateIncident.setWidthPercentage(100f);
@@ -112,8 +135,16 @@ public class PDFExporter {
         cellDateIncident.setHorizontalAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
         tableDateIncident.addCell(cellDateIncident);
         tableDateIncident.completeRow();
-        document.add(new Paragraph(" "));
-        document.add(tableDateIncident);
+        try {
+            document.add(new Paragraph(" "));
+        } catch (DocumentException ex) {
+            showAlert(ex);
+        }
+        try {
+            document.add(tableDateIncident);
+        } catch (DocumentException ex) {
+            showAlert(ex);
+        }
         /* Таблица где вписано наименование дефекта */
         PdfPTable tableDefect = new PdfPTable(poinColumnWidthClient);
         tableDefect.setWidthPercentage(100f);
@@ -128,7 +159,11 @@ public class PDFExporter {
         cellDefect.setHorizontalAlignment(com.itextpdf.text.Element.ALIGN_LEFT);
         tableDefect.addCell(cellDefect);
         tableDefect.completeRow();
-        document.add(tableDefect);
+        try {
+            document.add(tableDefect);
+        } catch (DocumentException ex) {
+            showAlert(ex);
+        }
         /* Таблица со списком использованных материалов */
         PdfPTable tableMaterialList = new PdfPTable(poinColumnWidthClient);
         tableMaterialList.setWidthPercentage(100f);
@@ -141,7 +176,11 @@ public class PDFExporter {
         cellMaterialListChunk.setFixedHeight(60f);
         tableMaterialList.addCell(cellMaterialListChunk);
         tableMaterialList.completeRow();
-        document.add(tableMaterialList);
+        try {
+            document.add(tableMaterialList);
+        } catch (DocumentException ex) {
+            showAlert(ex);
+        }
         /* Таблица со списком проведенных работ */
         PdfPTable tableFixProblem = new PdfPTable(poinColumnWidthClient);
         tableFixProblem.setWidthPercentage(100f);
@@ -154,7 +193,11 @@ public class PDFExporter {
         cellFixProblemChunk.setFixedHeight(300f);
         tableFixProblem.addCell(cellFixProblemChunk);
         tableFixProblem.completeRow();
-        document.add(tableFixProblem);
+        try {
+            document.add(tableFixProblem);
+        } catch (DocumentException ex) {
+            showAlert(ex);
+        }
         /* Таблица со списком времени и кол-ва людей */
         float [] columnManAndCount = {30F, 20F, 30F, 20F};
         PdfPTable tableManAndCount = new PdfPTable(columnManAndCount);
@@ -175,7 +218,11 @@ public class PDFExporter {
         cellEmployerCounterChunk.setUseBorderPadding(true);
         tableManAndCount.addCell(cellEmployerCounterChunk);
         tableManAndCount.completeRow();
-        document.add(tableManAndCount);
+        try {
+            document.add(tableManAndCount);
+        } catch (DocumentException ex) {
+            showAlert(ex);
+        }
         /* Таблица со списком фамилий работников */
         PdfPTable tableNameEmployer = new PdfPTable(poinColumnWidthClient);
         tableNameEmployer.setWidthPercentage(100f);
@@ -187,7 +234,11 @@ public class PDFExporter {
         cellEmployerNameChunk.setUseBorderPadding(true);
         tableNameEmployer.addCell(cellEmployerNameChunk);
         tableNameEmployer.completeRow();
-        document.add(tableNameEmployer);
+        try {
+            document.add(tableNameEmployer);
+        } catch (DocumentException ex) {
+            showAlert(ex);
+        }
         /* Таблица с авто и пробегом */
         PdfPTable tableAutoAndMileage = new PdfPTable(columnManAndCount);
         tableAutoAndMileage.setWidthPercentage(100f);
@@ -207,9 +258,17 @@ public class PDFExporter {
         cellMileageChunk.setHorizontalAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
         tableAutoAndMileage.addCell(cellMileageChunk);
         tableAutoAndMileage.completeRow();
-        document.add(tableAutoAndMileage);
+        try {
+            document.add(tableAutoAndMileage);
+        } catch (DocumentException ex) {
+            showAlert(ex);
+        }
         /* Формирование подписи */
-        document.add(new Paragraph(" "));
+        try {
+            document.add(new Paragraph(" "));
+        } catch (DocumentException ex) {
+            showAlert(ex);
+        }
         float[] signatureWidth = {50f, 50f};
         PdfPTable tableFooterName = new PdfPTable(signatureWidth);
         tableFooterName.setWidthPercentage(100f);
@@ -221,8 +280,16 @@ public class PDFExporter {
         cellService.setHorizontalAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
         tableFooterName.addCell(cellService);
         tableFooterName.completeRow();
-        document.add(tableFooterName);
-        document.add(new Paragraph(" "));
+        try {
+            document.add(tableFooterName);
+        } catch (DocumentException ex) {
+            showAlert(ex);
+        }
+        try {
+            document.add(new Paragraph(" "));
+        } catch (DocumentException ex) {
+            showAlert(ex);
+        }
         PdfPTable tableSignature = new PdfPTable(signatureWidth);
         tableSignature.setWidthPercentage(100f);
         PdfPCell signature1 = new PdfPCell(new Phrase(signature));
@@ -233,7 +300,25 @@ public class PDFExporter {
         signature2.setHorizontalAlignment(com.itextpdf.text.Element.ALIGN_RIGHT);
         tableSignature.addCell(signature2);
         tableSignature.completeRow();
-        document.add(tableSignature);
+        try {
+            document.add(tableSignature);
+        } catch (DocumentException ex) {
+            showAlert(ex);
+        }
         document.close();
     }
+
+
+    public static void showAlert(DocumentException ex){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.initOwner(Main.getPrimaryStage());
+        alert.setTitle("Внимание");
+        alert.setHeaderText("Can not add user");
+        alert.setContentText("Error");
+        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+        alert.show();
+        // ex.printStackTrace();
+    }
+
+
 }
