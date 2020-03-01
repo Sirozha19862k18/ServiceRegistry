@@ -24,10 +24,14 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
+import java.lang.reflect.InvocationTargetException;
 
 
 public class Controller {
@@ -316,8 +320,7 @@ public class Controller {
         clientListToDeleteList.setItems(observableListClient);
     }
 /*Процедура удаления клиента из базы*/
-    public void deleteSelectedClient(ActionEvent actionEvent) {
-
+    public void deleteSelectedClient(ActionEvent actionEvent) throws XPathExpressionException {
         nodeList = doc.getElementsByTagName("client");
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node node = nodeList.item(i);
@@ -327,9 +330,15 @@ public class Controller {
                     eElement.getParentNode().removeChild(eElement);
                 }
             }
-           writeDocument(doc);
-            deleteSelectedCliendBtn.setDisable(true);
         }
+        deleteSpacingInDocument();
+        writeDocument(doc);
+        deleteSelectedCliendBtn.setDisable(true);
+        String headerText = "Успешно!";
+        String contentText = "Клиент "+ clienttoDeleteChange+ " успешно удален из базы";
+        Alert.AlertType alertType= Alert.AlertType.INFORMATION;
+        showAlertMessage(headerText, contentText, alertType);
+
     }
   /*  Выбор клиента для последующего удаления из базы */
     public void selectClientToDeleteList(MouseEvent mouseEvent) {
@@ -339,7 +348,7 @@ public class Controller {
 
 
 
-    public void exportToPDF(ActionEvent actionEvent) throws IOException, DocumentException {
+    public void exportToPDF(ActionEvent actionEvent) throws IOException, DocumentException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, ClassNotFoundException {
     PDFExporter exportFileToPDF = new PDFExporter();
     exportFileToPDF.exportToPDF(client);
     }
@@ -438,7 +447,7 @@ public class Controller {
         }
     }
 /*Удаление выбранного протокола сервиса*/
-    public void deleteSelectedProtocol(ActionEvent actionEvent) {
+    public void deleteSelectedProtocol(ActionEvent actionEvent) throws XPathExpressionException {
         if(client!=null&&client.getClientName()!=null&&client.getIncidentNumber()!=null) {
             System.out.println(1);
             nodeList = doc.getElementsByTagName("client");
@@ -463,18 +472,8 @@ public class Controller {
                     }
                 }
             }
-           for (int k=0; k<nodeList.getLength(); k++){
-               Node node = nodeList.item(k);
-               node.normalize();
-               if(node.hasChildNodes()){
-                   NodeList b = node.getChildNodes();
-                   for (int z=0; z<b.getLength();z++ ){
-                       Node nd = b.item(z);
-                       nd.normalize();
-                   }
-               }
-           }
 
+            deleteSpacingInDocument();
             writeDocument(doc);
             String headerText = "Протокол успешно удален";
             String contentText = "Протокол № "+ client.getIncidentNumber()+" у клиента "+ client.getClientName()+ " успешно удален";
@@ -498,6 +497,16 @@ public class Controller {
         alert.setContentText(contentText);
         alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
         alert.show();
+    }
+
+   /* Удаления пустых строк в XML файле. Иначе крашится вывод клиентов*/
+    void deleteSpacingInDocument() throws XPathExpressionException {
+        XPath xp = XPathFactory.newInstance().newXPath();
+        NodeList nl = (NodeList) xp.evaluate("//text()[normalize-space(.)='']", doc, XPathConstants.NODESET);
+        for (int i=0; i < nl.getLength(); ++i) {
+            Node node = nl.item(i);
+            node.getParentNode().removeChild(node);
+        }
     }
 }
 

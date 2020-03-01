@@ -1,26 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox alignment="center" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<VBox prefHeight="1024" prefWidth="768" alignment="center" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
 
-    <MenuBar>
-        <Menu text="File">
-            <items>
-                <MenuItem fx:id="appExit" onAction="#appExit" text="Выход" />
-            </items>
-        </Menu>
-        <Menu text="Операции">
-            <items>
-                <MenuItem fx:id="openClientList" onAction="#showClientList" text="Вывести список клиентов" />
-            </items>
-        </Menu>
-    </MenuBar>
+
     <HBox spacing="5">
         <VBox />
         <HBox spacing="5" />
-        <ListView fx:id="list" onMouseClicked="#listMouseClicked" prefHeight="700" prefWidth="250" />
+        <ListView fx:id="list" onMouseClicked="#listMouseClicked" prefHeight="700" prefWidth="250">
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding></ListView>
         <TabPane prefHeight="700" prefWidth="850">
             <tabs>
                 <Tab closable="false" text="Протокол">
@@ -99,7 +92,7 @@
                                     <children>
                                        <Label layoutX="211.0" layoutY="39.0" prefHeight="18.0" prefWidth="241.0" text="Клиент не выбран" />
                                        <Label layoutX="211.0" layoutY="70.0" prefHeight="18.0" prefWidth="165.0" text="Протокол не выбран" />
-                                       <Button fx:id="deleteSelectedProtocolBtn" onAction="#deleteSelectedProtocol" layoutX="211.0" layoutY="124.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="92.0" text="Удалить" />
+                                       <Button fx:id="deleteSelectedProtocolBtn" layoutX="211.0" layoutY="124.0" mnemonicParsing="false" onAction="#deleteSelectedProtocol" prefHeight="26.0" prefWidth="92.0" text="Удалить" />
                                     </children>
                                             </AnchorPane>
                                         </content>
@@ -111,10 +104,16 @@
                 </Tab>
             </tabs>
         </TabPane>
+      <padding>
+         <Insets right="10.0" top="10.0" />
+      </padding>
     </HBox>
 
-    <HBox spacing="50">
-        <Button fx:id="openXML" maxHeight="Infinity" mnemonicParsing="false" onAction="#showClientList" text="Вывести список клиентов" HBox.hgrow="ALWAYS" />
+    <HBox alignment="BOTTOM_LEFT" fillHeight="false" prefWidth="1126.0" spacing="50">
+        <Button fx:id="openXML" maxHeight="Infinity" mnemonicParsing="false" onAction="#showClientList" prefHeight="26.0" prefWidth="249.0" text="Вывести список клиентов" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
+      <padding>
+         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+      </padding>
     </HBox>
 
 
