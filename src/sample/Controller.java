@@ -6,11 +6,16 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.w3c.dom.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -32,6 +37,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public class Controller {
@@ -321,24 +328,29 @@ public class Controller {
     }
 /*Процедура удаления клиента из базы*/
     public void deleteSelectedClient(ActionEvent actionEvent) throws XPathExpressionException {
-        nodeList = doc.getElementsByTagName("client");
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            Node node = nodeList.item(i);
-            if (node.getNodeType() == Node.ELEMENT_NODE) {
-                Element eElement = (Element) node;
-                if (eElement.getAttribute("client").equals(clienttoDeleteChange)) {
-                    eElement.getParentNode().removeChild(eElement);
+       String titleConfirmText ="Внимание";
+        String contentConfirmText = "Вы точно хотите удалить из базы клиента " + clienttoDeleteChange;
+        boolean confirUserChange = showConfirmationDialog(titleConfirmText, contentConfirmText);
+        System.out.println(confirUserChange);
+        if (confirUserChange==true) {
+            nodeList = doc.getElementsByTagName("client");
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Node node = nodeList.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    Element eElement = (Element) node;
+                    if (eElement.getAttribute("client").equals(clienttoDeleteChange)) {
+                        eElement.getParentNode().removeChild(eElement);
+                    }
                 }
             }
+            deleteSpacingInDocument();
+            writeDocument(doc);
+            deleteSelectedCliendBtn.setDisable(true);
+            String headerText = "Успешно!";
+            String contentText = "Клиент " + clienttoDeleteChange + " успешно удален из базы";
+            Alert.AlertType alertType = Alert.AlertType.INFORMATION;
+            showAlertMessage(headerText, contentText, alertType);
         }
-        deleteSpacingInDocument();
-        writeDocument(doc);
-        deleteSelectedCliendBtn.setDisable(true);
-        String headerText = "Успешно!";
-        String contentText = "Клиент "+ clienttoDeleteChange+ " успешно удален из базы";
-        Alert.AlertType alertType= Alert.AlertType.INFORMATION;
-        showAlertMessage(headerText, contentText, alertType);
-
     }
   /*  Выбор клиента для последующего удаления из базы */
     public void selectClientToDeleteList(MouseEvent mouseEvent) {
@@ -489,6 +501,16 @@ public class Controller {
     }
 
 
+   /* Удаления пустых строк в XML файле. Иначе крашится вывод клиентов*/
+    void deleteSpacingInDocument() throws XPathExpressionException {
+        XPath xp = XPathFactory.newInstance().newXPath();
+        NodeList nl = (NodeList) xp.evaluate("//text()[normalize-space(.)='']", doc, XPathConstants.NODESET);
+        for (int i=0; i < nl.getLength(); ++i) {
+            Node node = nl.item(i);
+            node.getParentNode().removeChild(node);
+        }
+    }
+
     void showAlertMessage(String headerText, String contentText, Alert.AlertType alertType){
         Alert alert = new Alert(alertType);
         alert.initOwner(Main.getPrimaryStage());
@@ -499,14 +521,22 @@ public class Controller {
         alert.show();
     }
 
-   /* Удаления пустых строк в XML файле. Иначе крашится вывод клиентов*/
-    void deleteSpacingInDocument() throws XPathExpressionException {
-        XPath xp = XPathFactory.newInstance().newXPath();
-        NodeList nl = (NodeList) xp.evaluate("//text()[normalize-space(.)='']", doc, XPathConstants.NODESET);
-        for (int i=0; i < nl.getLength(); ++i) {
-            Node node = nl.item(i);
-            node.getParentNode().removeChild(node);
-        }
+   static boolean showConfirmationDialog (String titleText,String  contentText) {
+        boolean confirmUserChange = false;
+       Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+       alert.setTitle(titleText);
+       alert.setHeaderText("Подтвердите действие");
+       alert.setContentText(contentText);
+       ButtonType okButton = new ButtonType("Да", ButtonBar.ButtonData.YES);
+       ButtonType noButton = new ButtonType("Нет", ButtonBar.ButtonData.NO);
+       alert.getButtonTypes().setAll(okButton, noButton);
+       Optional<ButtonType> result = alert.showAndWait();
+      if(result.get().getButtonData()==ButtonBar.ButtonData.YES){
+      confirmUserChange= true;
+      }
+
+     return confirmUserChange;
     }
 }
+
 
