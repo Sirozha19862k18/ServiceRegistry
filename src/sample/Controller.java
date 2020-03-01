@@ -351,9 +351,10 @@ clientCounterLabel.setText(String.valueOf(clientCounter));
     /*Новый протокол сервиса создание*/
     public void newIncidentNumberBtnPressed(ActionEvent actionEvent) {
 
-        if(client!=null){
+        if(client!=null&&client.getClientName()!=null){
             confirmNewIncidentNumberBtn.setVisible(true);
             newIncidentNumberTextField.setVisible(true);
+            selectedClientLabel.setText(client.getClientName());
         }
         else {
             String headerText = "Не выбран клиент для которого нужно создать новый протокол сервиса";

@@ -62,8 +62,8 @@
                         <Button layoutX="92.0" layoutY="213.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="232.0" text="Удалить  протокол сервиса" />
                         <TextField fx:id="newIncidentNumberTextField" layoutX="358.0" layoutY="61.0" visible="false" />
                         <Button fx:id="confirmNewIncidentNumberBtn" layoutX="537.0" layoutY="61.0" mnemonicParsing="false" onAction="#confirmNewIncidentNumberBtn" text="OK" visible="false" />
-                        <Label layoutX="92.0" layoutY="22.0" prefHeight="17.0" prefWidth="107.0" text="Выбран клиент:" />
-                        <Label  fx:id="selectedClientLabel" layoutX= "232.0" layoutY="22.0" prefHeight="17.0" prefWidth="287.0" text="" />
+                        <Label layoutX="151.0" layoutY="22.0" prefHeight="17.0" prefWidth="166.0" text="Выбран клиент:" />
+                        <Label fx:id="selectedClientLabel" layoutX="393.0" layoutY="22.0" prefHeight="17.0" prefWidth="287.0" text="" />
                     </children></Pane>
                     </content>
                 </Tab>
