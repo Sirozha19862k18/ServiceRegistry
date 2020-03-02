@@ -6,15 +6,17 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import javafx.scene.control.Alert;
-import javafx.scene.layout.Region;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 
-import java.lang.reflect.InvocationTargetException;
 
 public class PDFExporter {
-    public void exportToPDF(Client client) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ClassNotFoundException {
+    private final String TITLE_TEXT = "Внимание! Произошла ошибка выполнения формирования документа. Вероятнее всего протокол уже существует и имеет атрибуты 'для чтения'";
+    private final Alert.AlertType ALERT = Alert.AlertType.ERROR;
+    public void exportToPDF(Client client)  {
         com.itextpdf.text.Document document = new com.itextpdf.text.Document(PageSize.A4);
         File file =new File("src/sample/Протоколы/"+client.getClientName()+"/"+client.getIncidentNumber()+".pdf");
         if(!file.exists()){
@@ -25,15 +27,15 @@ public class PDFExporter {
         }
         try {
             PdfWriter.getInstance(document, new FileOutputStream(file));
-        } catch (DocumentException ex) {
-         showAlert(ex);
+        } catch (DocumentException | FileNotFoundException ex) {
+         Controller.showAlertMessage(TITLE_TEXT, ex.toString(), ALERT);
         }
         document.open();
         BaseFont baseFont = null;
         try {
             baseFont = BaseFont.createFont("src/sample/font.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-        } catch (DocumentException ex) {
-          showAlert(ex);
+        } catch (DocumentException | IOException ex) {
+            Controller.showAlertMessage(TITLE_TEXT, ex.toString(), ALERT);
         }
         Font font = new Font(baseFont, 12, Font.NORMAL);
         Font titleFont = new Font(baseFont, 16, Font.BOLD );
@@ -68,7 +70,11 @@ public class PDFExporter {
         try {
             image = Image.getInstance("src/sample/resource/logo.jpg");
         } catch (BadElementException ex) {
-           showAlert(ex);
+            Controller.showAlertMessage(TITLE_TEXT, ex.toString(), ALERT);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            Controller.showAlertMessage("Логотип для вставки в документ не найден", e.toString(), ALERT);
         }
         /*  Формирование заголовка*/
         float[] tableHeaderWidth = {35f, 65f};
@@ -93,7 +99,7 @@ public class PDFExporter {
         try {
             document.add(tableHeader);
         } catch (DocumentException ex) {
-           showAlert(ex);
+            Controller.showAlertMessage(TITLE_TEXT, ex.toString(), ALERT);
         }
         /* Таблица где вписано имя клиента */
         float[] poinColumnWidthClient={30F, 120F};
@@ -114,12 +120,12 @@ public class PDFExporter {
         try {
             document.add(new Paragraph(" "));
         } catch (DocumentException ex) {
-          showAlert(ex);
+            Controller.showAlertMessage(TITLE_TEXT, ex.toString(), ALERT);
         }
         try {
             document.add(tableClientName);
         } catch (DocumentException ex) {
-            showAlert(ex);
+            Controller.showAlertMessage(TITLE_TEXT, ex.toString(), ALERT);
         }
         /* Таблица где вписана дата дефекта */
         PdfPTable tableDateIncident = new PdfPTable(poinColumnWidthClient);
@@ -137,12 +143,12 @@ public class PDFExporter {
         try {
             document.add(new Paragraph(" "));
         } catch (DocumentException ex) {
-            showAlert(ex);
+            Controller.showAlertMessage(TITLE_TEXT, ex.toString(), ALERT);
         }
         try {
             document.add(tableDateIncident);
         } catch (DocumentException ex) {
-            showAlert(ex);
+            Controller.showAlertMessage(TITLE_TEXT, ex.toString(), ALERT);
         }
         /* Таблица где вписано наименование дефекта */
         PdfPTable tableDefect = new PdfPTable(poinColumnWidthClient);
@@ -161,7 +167,7 @@ public class PDFExporter {
         try {
             document.add(tableDefect);
         } catch (DocumentException ex) {
-          showAlert(ex);
+            Controller.showAlertMessage(TITLE_TEXT, ex.toString(), ALERT);
         }
         /* Таблица со списком использованных материалов */
         PdfPTable tableMaterialList = new PdfPTable(poinColumnWidthClient);
@@ -178,7 +184,7 @@ public class PDFExporter {
         try {
             document.add(tableMaterialList);
         } catch (DocumentException ex) {
-            showAlert(ex);
+            Controller.showAlertMessage(TITLE_TEXT, ex.toString(), ALERT);
         }
         /* Таблица со списком проведенных работ */
         PdfPTable tableFixProblem = new PdfPTable(poinColumnWidthClient);
@@ -195,7 +201,7 @@ public class PDFExporter {
         try {
             document.add(tableFixProblem);
         } catch (DocumentException ex) {
-            showAlert(ex);
+            Controller.showAlertMessage(TITLE_TEXT, ex.toString(), ALERT);
         }
         /* Таблица со списком времени и кол-ва людей */
         float [] columnManAndCount = {30F, 20F, 30F, 20F};
@@ -220,7 +226,7 @@ public class PDFExporter {
         try {
             document.add(tableManAndCount);
         } catch (DocumentException ex) {
-            showAlert(ex);
+            Controller.showAlertMessage(TITLE_TEXT, ex.toString(), ALERT);
         }
         /* Таблица со списком фамилий работников */
         PdfPTable tableNameEmployer = new PdfPTable(poinColumnWidthClient);
@@ -236,7 +242,7 @@ public class PDFExporter {
         try {
             document.add(tableNameEmployer);
         } catch (DocumentException ex) {
-           showAlert(ex);
+            Controller.showAlertMessage(TITLE_TEXT, ex.toString(), ALERT);
         }
         /* Таблица с авто и пробегом */
         PdfPTable tableAutoAndMileage = new PdfPTable(columnManAndCount);
@@ -260,13 +266,13 @@ public class PDFExporter {
         try {
             document.add(tableAutoAndMileage);
         } catch (DocumentException ex) {
-            showAlert(ex);
+            Controller.showAlertMessage(TITLE_TEXT, ex.toString(), ALERT);
         }
         /* Формирование подписи */
         try {
             document.add(new Paragraph(" "));
         } catch (DocumentException ex) {
-           showAlert(ex);
+            Controller.showAlertMessage(TITLE_TEXT, ex.toString(), ALERT);
         }
         float[] signatureWidth = {50f, 50f};
         PdfPTable tableFooterName = new PdfPTable(signatureWidth);
@@ -282,12 +288,13 @@ public class PDFExporter {
         try {
             document.add(tableFooterName);
         } catch (DocumentException ex) {
-            showAlert(ex);
+            Controller.showAlertMessage(TITLE_TEXT, ex.toString(), ALERT);
         }
         try {
             document.add(new Paragraph(" "));
         } catch (DocumentException ex) {
-            showAlert(ex);
+            Controller.showAlertMessage(TITLE_TEXT, ex.toString(), ALERT);
+
         }
         PdfPTable tableSignature = new PdfPTable(signatureWidth);
         tableSignature.setWidthPercentage(100f);
@@ -305,27 +312,8 @@ public class PDFExporter {
             String headerText = "Протокол успешно удален";
             String contentText = "Протокол № "+ client.getIncidentNumber()+" у клиента "+ client.getClientName()+ " успешно удален";
             Alert.AlertType alertType= Alert.AlertType.WARNING;
-
-           
-            Controller alertWindow = new Controller();
-            alertWindow.showAlertMessage(headerText, contentText, alertType);
-
-            showAlert(ex);
+            Controller.showAlertMessage(headerText, contentText, alertType);
         }
         document.close();
     }
-
-
-    public static void showAlert(DocumentException ex){
-          Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.initOwner(Main.getPrimaryStage().getOwner().getScene().getWindow());
-        alert.setTitle("Внимание");
-        alert.setHeaderText("Can not add user");
-        alert.setContentText("Error");
-        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
-        alert.show();
-        // ex.printStackTrace();
-    }
-
-
 }

@@ -523,8 +523,10 @@ public class Controller {
     }
 
     public void CheckProtokol(ActionEvent actionEvent) throws ParseException {
+      /* Проверяем правильность даты инцидента*/
        String date = dateOfIncidentTextField.getText();
        dateOfIncidentTextField.setText(OutputCheckerUtils.format(date));
+
     }
 }
 
