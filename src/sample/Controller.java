@@ -1,21 +1,15 @@
 package sample;
 
 import com.itextpdf.text.*;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import org.w3c.dom.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -38,7 +32,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
+
 
 
 public class Controller {
@@ -83,11 +77,6 @@ public class Controller {
     @FXML    Button deleteSelectedProtocolBtn;
 
 
-    @FXML
-    public void appExit(ActionEvent actionEvent) {
-        Platform.exit();
-    }
-
     public void loadXMLfile() throws ParserConfigurationException, IOException, SAXException {
         File xmlFille = new File("src/sample/service.xml");
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -98,7 +87,7 @@ public class Controller {
         observableListIncident = FXCollections.observableArrayList();
     }
 
-    @FXML
+ /*   Загрузка клиентов в ClientList */
     public void showClientList(ActionEvent actionEvent) throws IOException, SAXException, ParserConfigurationException {
         client = new Client();
         section = 1;
@@ -288,6 +277,7 @@ public class Controller {
         }
     }
 
+   /* Запись сформированного xml в файл*/
     private void writeDocument(Document document) {
         try {
             Transformer tr = TransformerFactory.newInstance().newTransformer();
@@ -303,14 +293,6 @@ public class Controller {
         }
     }
 
-
-    @FXML
-    public void addClientWindowClose(ActionEvent actionEvent) {
-        addClientWindow = (Stage) addClientWindowCloseBtn.getScene().getWindow();
-        addClientWindow.close();
-    }
-
-    @FXML
     public void addClientToBase(ActionEvent actionEvent) throws IOException, ParserConfigurationException, SAXException {
         String newClientName = newClientNameTextField.getText();
         loadXMLfile();
@@ -521,6 +503,7 @@ public class Controller {
         alert.show();
     }
 
+/*    Вывод диалога подтверждения */
    static boolean showConfirmationDialog (String titleText,String  contentText) {
         boolean confirmUserChange = false;
        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
