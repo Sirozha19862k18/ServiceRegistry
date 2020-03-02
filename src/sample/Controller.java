@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.text.ParseException;
 import java.util.Optional;
 
 
@@ -64,7 +65,6 @@ public class Controller {
     @FXML    TextArea fixProblemTextArea;
     @FXML    TextField employerTimeTextField;
     @FXML    Button SaveXML;
-    @FXML    Button addClientWindowCloseBtn;
     @FXML    TextField newClientNameTextField;
     @FXML    Button addClientToBaseBtn;
     @FXML    ListView<String> clientListToDeleteList;
@@ -75,6 +75,7 @@ public class Controller {
     @FXML    Label selectedClientLabel;
     @FXML    Button newIncidentNumberBtn;
     @FXML    Button deleteSelectedProtocolBtn;
+    @FXML    Button CheckProtokolBtn;
 
 
     public void loadXMLfile() throws ParserConfigurationException, IOException, SAXException {
@@ -493,7 +494,7 @@ public class Controller {
         }
     }
 
-    void showAlertMessage(String headerText, String contentText, Alert.AlertType alertType){
+    static void showAlertMessage(String headerText, String contentText, Alert.AlertType alertType){
         Alert alert = new Alert(alertType);
         alert.initOwner(Main.getPrimaryStage());
         alert.setTitle("Внимание");
@@ -519,6 +520,11 @@ public class Controller {
       }
 
      return confirmUserChange;
+    }
+
+    public void CheckProtokol(ActionEvent actionEvent) throws ParseException {
+       String date = dateOfIncidentTextField.getText();
+       dateOfIncidentTextField.setText(OutputCheckerUtils.format(date));
     }
 }
 
