@@ -5,11 +5,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 
 public class Main extends Application {
     private static Stage pStage;
-
 
     public static Stage getPrimaryStage() {
        return pStage;
@@ -29,10 +27,7 @@ public class Main extends Application {
         primaryStage.show();
     }
 
-
     public static void main(String[] args) {
         launch(args);
     }
-
 }
-

@@ -9,7 +9,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
-import javafx.stage.Stage;
 import org.w3c.dom.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -48,7 +47,6 @@ public class Controller {
     int countMouseClick = 0;
     Element protocolServiseProperties;
     Client client;
-    Stage addClientWindow;
     String clienttoDeleteChange;
     int clientCounter;
     boolean textFieldSetEditable=false; //Разрешает редактировать поля протокола сервиса
@@ -75,21 +73,34 @@ public class Controller {
     @FXML    Label selectedClientLabel;
     @FXML    Button newIncidentNumberBtn;
     @FXML    Button deleteSelectedProtocolBtn;
-    @FXML    Button CheckProtokolBtn;
+    @FXML    Button checkProtokolBtn;
+    @FXML    Label clientToProtocolDeleteLabel;
+    @FXML    Label protocolToProtocolDeleteLabel;
 
 
-    public void loadXMLfile() throws ParserConfigurationException, IOException, SAXException {
+    public void loadXMLfile()  {
         File xmlFille = new File("src/sample/service.xml");
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setIgnoringElementContentWhitespace(true);
-        DocumentBuilder dbuilder = factory.newDocumentBuilder();
-        doc = dbuilder.parse(xmlFille);
+        DocumentBuilder dbuilder = null;
+        try {
+            dbuilder = factory.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            showAlertMessage("Ошибка обработки файла данных", e.toString(), Alert.AlertType.ERROR);
+        }
+        try {
+            doc = dbuilder.parse(xmlFille);
+        } catch (SAXException e) {
+            showAlertMessage("Ошибка парсинга файла данных", e.toString(), Alert.AlertType.ERROR);
+        } catch (IOException e) {
+            showAlertMessage("Ошибка чтения файла данных", e.toString(), Alert.AlertType.ERROR);
+        }
         observableListClient = FXCollections.observableArrayList();
         observableListIncident = FXCollections.observableArrayList();
     }
 
  /*   Загрузка клиентов в ClientList */
-    public void showClientList(ActionEvent actionEvent) throws IOException, SAXException, ParserConfigurationException {
+    public void showClientList(ActionEvent actionEvent)  {
         client = new Client();
         section = 1;
         loadXMLfile();
@@ -270,7 +281,9 @@ public class Controller {
                 client.setIncidentNumber(incidentChange);
                 String argument = "print";
                 incidentDetails(argument);
-                SaveXML.setDisable(false);
+               checkProtokolBtn.setDisable(false);
+                clientToProtocolDeleteLabel.setText(client.getClientName());
+                protocolToProtocolDeleteLabel.setText(client.getIncidentNumber());
 
             } else {
                 countMouseClick = 0;
@@ -294,7 +307,7 @@ public class Controller {
         }
     }
 
-    public void addClientToBase(ActionEvent actionEvent) throws IOException, ParserConfigurationException, SAXException {
+    public void addClientToBase(ActionEvent actionEvent)  {
         String newClientName = newClientNameTextField.getText();
         loadXMLfile();
         Node root = doc.getDocumentElement();
@@ -302,15 +315,16 @@ public class Controller {
         newClient.setAttribute("client", newClientName);
         root.appendChild(newClient);
         writeDocument(doc);
+        showAlertMessage("Новый клиент добавлен в базу", "Клиент "+ newClientName+ " успешно добавлен", Alert.AlertType.INFORMATION);
     }
 
-    public void getClientListToDelete(ActionEvent actionEvent) throws IOException, SAXException, ParserConfigurationException {
+    public void getClientListToDelete(ActionEvent actionEvent)  {
         loadXMLfile();
         getClientList();
         clientListToDeleteList.setItems(observableListClient);
     }
 /*Процедура удаления клиента из базы*/
-    public void deleteSelectedClient(ActionEvent actionEvent) throws XPathExpressionException {
+    public void deleteSelectedClient(ActionEvent actionEvent) {
        String titleConfirmText ="Внимание";
         String contentConfirmText = "Вы точно хотите удалить из базы клиента " + clienttoDeleteChange;
         boolean confirUserChange = showConfirmationDialog(titleConfirmText, contentConfirmText);
@@ -343,7 +357,7 @@ public class Controller {
 
 
 
-    public void exportToPDF(ActionEvent actionEvent) throws IOException, DocumentException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+    public void exportToPDF(ActionEvent actionEvent)  {
     PDFExporter exportFileToPDF = new PDFExporter();
     exportFileToPDF.exportToPDF(client);
     }
@@ -442,7 +456,7 @@ public class Controller {
         }
     }
 /*Удаление выбранного протокола сервиса*/
-    public void deleteSelectedProtocol(ActionEvent actionEvent) throws XPathExpressionException {
+    public void deleteSelectedProtocol(ActionEvent actionEvent)  {
         if(client!=null&&client.getClientName()!=null&&client.getIncidentNumber()!=null) {
             System.out.println(1);
             nodeList = doc.getElementsByTagName("client");
@@ -485,9 +499,14 @@ public class Controller {
 
 
    /* Удаления пустых строк в XML файле. Иначе крашится вывод клиентов*/
-    void deleteSpacingInDocument() throws XPathExpressionException {
+    void deleteSpacingInDocument()  {
         XPath xp = XPathFactory.newInstance().newXPath();
-        NodeList nl = (NodeList) xp.evaluate("//text()[normalize-space(.)='']", doc, XPathConstants.NODESET);
+        NodeList nl = null;
+        try {
+            nl = (NodeList) xp.evaluate("//text()[normalize-space(.)='']", doc, XPathConstants.NODESET);
+        } catch (XPathExpressionException e) {
+            showAlertMessage("Ошибка оптимизации файла данных после удаления. Возможно файл был открыт в другой программе", e.toString(), Alert.AlertType.ERROR);
+        }
         for (int i=0; i < nl.getLength(); ++i) {
             Node node = nl.item(i);
             node.getParentNode().removeChild(node);
@@ -522,11 +541,11 @@ public class Controller {
      return confirmUserChange;
     }
 
-    public void CheckProtokol(ActionEvent actionEvent) throws ParseException {
+    public void CheckProtokol(ActionEvent actionEvent)  {
       /* Проверяем правильность даты инцидента*/
        String date = dateOfIncidentTextField.getText();
        dateOfIncidentTextField.setText(OutputCheckerUtils.format(date));
-
+       SaveXML.setDisable(false);
     }
 }
 

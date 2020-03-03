@@ -44,7 +44,7 @@
                             <Label layoutX="310.0" layoutY="542.0" text="Список материалов" />
                             <Button fx:id="SaveXML" disable="true" layoutX="348.0" layoutY="630.0" mnemonicParsing="false" onAction="#saveXML" text="Сохранить изменения" />
                      <Button fx:id="exportToPDFBtn" layoutX="465.0" layoutY="14.0" mnemonicParsing="false" onAction="#exportToPDF" prefHeight="69.0" prefWidth="127.0" text="Экспорт в PDF" />
-                     <Button fx:id="CheckProtokolBtn" onAction="#CheckProtokol" layoutX="27.0" layoutY="630.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="191.0" text="Проверить протокол" />
+                     <Button fx:id="checkProtokolBtn" onAction="#CheckProtokol"  disable="true" layoutX="27.0" layoutY="630.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="191.0" text="Проверить протокол" />
                         </Pane>
                     </content>
                 </Tab>
@@ -91,8 +91,8 @@
                                         <content>
                                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="276.0" prefWidth="601.0">
                                     <children>
-                                       <Label layoutX="211.0" layoutY="39.0" prefHeight="18.0" prefWidth="241.0" text="Клиент не выбран" />
-                                       <Label layoutX="211.0" layoutY="70.0" prefHeight="18.0" prefWidth="165.0" text="Протокол не выбран" />
+                                       <Label fx:id="clientToProtocolDeleteLabel" layoutX="211.0" layoutY="39.0" prefHeight="18.0" prefWidth="241.0" text="Клиент не выбран" />
+                                       <Label fx:id="protocolToProtocolDeleteLabel" layoutX="211.0" layoutY="70.0" prefHeight="18.0" prefWidth="165.0" text="Протокол не выбран" />
                                        <Button fx:id="deleteSelectedProtocolBtn" layoutX="211.0" layoutY="124.0" mnemonicParsing="false" onAction="#deleteSelectedProtocol" prefHeight="26.0" prefWidth="92.0" text="Удалить" />
                                     </children>
                                             </AnchorPane>

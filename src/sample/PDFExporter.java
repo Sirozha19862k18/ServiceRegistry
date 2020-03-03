@@ -20,10 +20,8 @@ public class PDFExporter {
         com.itextpdf.text.Document document = new com.itextpdf.text.Document(PageSize.A4);
         File file =new File("src/sample/Протоколы/"+client.getClientName()+"/"+client.getIncidentNumber()+".pdf");
         if(!file.exists()){
-           // System.out.println(file);
             File file2 = new File("src/sample/Протоколы//"+client.getClientName());
             file2.mkdir();
-            //System.out.println(file2);
         }
         try {
             PdfWriter.getInstance(document, new FileOutputStream(file));
@@ -309,11 +307,12 @@ public class PDFExporter {
         try {
             document.add(tableSignature);
         } catch (DocumentException ex) {
-            String headerText = "Протокол успешно удален";
-            String contentText = "Протокол № "+ client.getIncidentNumber()+" у клиента "+ client.getClientName()+ " успешно удален";
-            Alert.AlertType alertType= Alert.AlertType.WARNING;
+            String headerText = "Документ не создан";
+            String contentText = ex.toString();
+            Alert.AlertType alertType= Alert.AlertType.ERROR;
             Controller.showAlertMessage(headerText, contentText, alertType);
         }
-        document.close();
+                document.close();
+        Controller.showAlertMessage("Протокол успешно экспотрирован", "Местоположение: "+ file.toString(), Alert.AlertType.INFORMATION);
     }
 }
