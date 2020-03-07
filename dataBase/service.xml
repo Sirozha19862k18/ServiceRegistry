@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<uniline>
+    <client client="Гудогай СПК">
+    <incidentNumber incidentNumber="2020-08-03">
+        <dateIncident dateIncident="03.08.2020"/>
+        <problemName problemName="Не работает шнек подогрева. Бяда-бяда. Совсем бяда. Пичалька."/>
+        <employerTime employerTime="5"/>
+        <employerCounter employerCounter="5"/>
+        <employerName employerName="Иванов, Петров"/>
+        <carDrivingToIncident carDrivingToIncident="Mercedes"/>
+        <mileage mileage="354"/>
+        <fixProblem fixProblem="Мы что-то сделали и оно само заработало"/>
+        <materialList materialList="Подшипник, болт, гайка"/>
+    </incidentNumber>
+        <incidentNumber incidentNumber="2019-08-03">
+        <dateIncident dateIncident="03.08.2019"/>
+        <problemName problemName="Не работает голова"/>
+        <employerTime employerTime="2"/>
+        <employerCounter employerCounter="5"/>
+        <employerName employerName="Сидоров"/>
+        <carDrivingToIncident carDrivingToIncident="Рено"/>
+        <mileage mileage="114"/>
+        <fixProblem fixProblem="Мы что-то сделали и оно само заработало"/>
+        <materialList materialList="Подшипник"/>
+        </incidentNumber>
+    </client>
+    <client client="Доброволец ОАО">
+        <incidentNumber incidentNumber="2020-03-03">
+         <dateIncident dateIncident="03.03.2020"/>
+         <problemName problemName="Не работает ничего"/>
+         <employerTime employerTime="1"/>
+         <employerCounter employerCounter="5"/>
+         <employerName employerName="Сидоров"/>
+         <carDrivingToIncident carDrivingToIncident="Рено"/>
+         <mileage mileage="200"/>
+         <fixProblem fixProblem="Мы что-то сделали и оно само заработало"/>
+         <materialList materialList="гайка"/>
+        </incidentNumber>
+    </client>
+    <client client="Гастелово ОАО"/>
+    <client client="Гигант СПК"/>
+    <client client="Денщиково СПК"/>
+    <client client="Металлист ОАО"/>
+
+</uniline>

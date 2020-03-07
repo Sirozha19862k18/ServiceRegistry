@@ -18,9 +18,9 @@ public class PDFExporter {
     private final Alert.AlertType ALERT = Alert.AlertType.ERROR;
     public void exportToPDF(Client client)  {
         com.itextpdf.text.Document document = new com.itextpdf.text.Document(PageSize.A4);
-        File file =new File("src/sample/Протоколы/"+client.getClientName()+"/"+client.getIncidentNumber()+".pdf");
+        File file =new File(Controller.PATH_TO_PROTOCOL+"/"+client.getClientName()+"/"+client.getIncidentNumber()+".pdf");
         if(!file.exists()){
-            File file2 = new File("src/sample/Протоколы//"+client.getClientName());
+            File file2 = new File(Controller.PATH_TO_PROTOCOL+"/"+client.getClientName());
             file2.mkdir();
         }
         try {
@@ -31,7 +31,7 @@ public class PDFExporter {
         document.open();
         BaseFont baseFont = null;
         try {
-            baseFont = BaseFont.createFont("src/sample/font.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            baseFont = BaseFont.createFont(Controller.PATH_TO_RESOURCES+"/font.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
         } catch (DocumentException | IOException ex) {
             Controller.showAlertMessage(TITLE_TEXT, ex.toString(), ALERT);
         }
@@ -66,7 +66,7 @@ public class PDFExporter {
         /*Вставка логотипа*/
         Image image = null;
         try {
-            image = Image.getInstance("src/sample/resource/logo.jpg");
+            image = Image.getInstance(Controller.PATH_TO_RESOURCES+"/logo.jpg");
         } catch (BadElementException ex) {
             Controller.showAlertMessage(TITLE_TEXT, ex.toString(), ALERT);
         } catch (MalformedURLException e) {

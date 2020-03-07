@@ -43,7 +43,7 @@
                             <TextArea fx:id="materialListTextArea" layoutX="15.0" layoutY="566.0" prefHeight="54.0" prefWidth="750.0" />
                             <Label layoutX="310.0" layoutY="542.0" text="Список материалов" />
                             <Button fx:id="SaveXML" disable="true" layoutX="348.0" layoutY="630.0" mnemonicParsing="false" onAction="#saveXML" text="Сохранить изменения" />
-                     <Button fx:id="exportToPDFBtn" layoutX="465.0" layoutY="14.0" mnemonicParsing="false" onAction="#exportToPDF" prefHeight="69.0" prefWidth="127.0" text="Экспорт в PDF" />
+                     <Button fx:id="exportToPDFBtn" disable="true" layoutX="465.0" layoutY="14.0" mnemonicParsing="false" onAction="#exportToPDF"  prefHeight="69.0" prefWidth="127.0" text="Экспорт в PDF" />
                      <Button fx:id="checkProtokolBtn" onAction="#CheckProtokol"  disable="true" layoutX="27.0" layoutY="630.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="191.0" text="Проверить протокол" />
                         </Pane>
                     </content>

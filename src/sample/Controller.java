@@ -1,6 +1,5 @@
 package sample;
 
-import com.itextpdf.text.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -29,13 +28,15 @@ import javax.xml.xpath.XPathFactory;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.text.ParseException;
 import java.util.Optional;
 
 
 
 public class Controller {
+
+    public final String PATH_TO_DATABASE= "database/service.xml";
+    public static final String PATH_TO_PROTOCOL = "Протоколы";
+    public static final String  PATH_TO_RESOURCES = "resource";
 
     ObservableList<String> observableListClient;
     ObservableList<String> observableListIncident;
@@ -76,10 +77,12 @@ public class Controller {
     @FXML    Button checkProtokolBtn;
     @FXML    Label clientToProtocolDeleteLabel;
     @FXML    Label protocolToProtocolDeleteLabel;
+    @FXML    Button exportToPDFBtn;
 
 
     public void loadXMLfile()  {
-        File xmlFille = new File("src/sample/service.xml");
+
+        File xmlFille = new File(PATH_TO_DATABASE);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setIgnoringElementContentWhitespace(true);
         DocumentBuilder dbuilder = null;
@@ -127,6 +130,7 @@ public class Controller {
                 clientCounter++;
             }
         }
+        exportToPDFBtn.setDisable(true);
     }
 
     /* Вывод списка инцидентов */
@@ -208,6 +212,7 @@ public class Controller {
                 }
             }
         }
+        exportToPDFBtn.setDisable(false);
     }
 
     public void incidentPrint(Element elementChildOfClient) {
@@ -297,7 +302,7 @@ public class Controller {
             Transformer tr = TransformerFactory.newInstance().newTransformer();
             tr.setOutputProperty(OutputKeys.INDENT, "yes");
             DOMSource source = new DOMSource(document);
-            FileOutputStream fos = new FileOutputStream("service.xml");
+            FileOutputStream fos = new FileOutputStream(PATH_TO_DATABASE);
             StreamResult result = new StreamResult(fos);
             tr.transform(source, result);
             fos.close();
@@ -381,7 +386,7 @@ public class Controller {
     }
 
 
-    void formSetEditable(boolean textFieldSetEditable){
+     void  formSetEditable(boolean textFieldSetEditable){
         textFieldSetEditable =this.textFieldSetEditable;
         numberOfIncident.setEditable(textFieldSetEditable);
         dateOfIncidentTextField.setEditable(textFieldSetEditable);

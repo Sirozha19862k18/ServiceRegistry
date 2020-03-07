@@ -22,6 +22,7 @@ public class Main extends Application {
         setPrimaryStage(primaryStage);
         pStage = primaryStage;
         primaryStage.setTitle("Учет Сервиса");
+
         primaryStage.setScene(new Scene(root, 1024, 768));
         primaryStage.setResizable(false);
         primaryStage.show();
